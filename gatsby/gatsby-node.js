@@ -1,4 +1,4 @@
-import path from 'path';
+import path, { resolve } from 'path';
 import fetch from 'isomorphic-fetch';
 
 async function turnPizzasIntoPages({ graphql, actions }) {
@@ -91,13 +91,30 @@ async function turnSlicemastersIntoPages({ graphql, actions }) {
       }
     }
   `);
+
+  data.slicemasters.nodes.forEach((slicemaster) => {
+    actions.createPage({
+      component: resolve('./src/templates/Slicemaster.js'),
+      path: `/slicemaster/${slicemaster.slug.current}`,
+      context: {
+        name: slicemaster.person,
+        slug: slicemaster.slug.current,
+      },
+    });
+  });
+
   const pageSize = parseInt(process.env.GATSBY_PAGE_SIZE);
   const pageCount = Math.ceil(data.slicemasters.totalCount / pageSize);
+  console.log(
+    `There are ${data.slicemasters.totalCount} total people. And we have ${pageCount} pages with ${pageSize} per page`
+  );
+
   Array.from({ length: pageCount }).forEach((_, i) => {
+    console.log(`Creating page ${i}`);
     actions.createPage({
-      path: `/slicemasteres/${i + 1}`,
+      path: `/slicemasters/${i + 1}`,
       component: path.resolve('./src/pages/slicemasters.js'),
-      // This data passes to the template
+
       context: {
         skip: i * pageSize,
         currentPage: i + 1,
