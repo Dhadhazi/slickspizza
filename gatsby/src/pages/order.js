@@ -24,6 +24,7 @@ export default function OrderPage({ data }) {
     error,
     loading,
     message,
+    submitOrder,
   } = usePizza({
     pizzas,
     values,
@@ -35,7 +36,7 @@ export default function OrderPage({ data }) {
   return (
     <>
       <SEO title="Order a Pizza!" />
-      <OrderStyles>
+      <OrderStyles onSubmit={submitOrder}>
         <fieldset>
           <legend>Your Info</legend>
           <label htmlFor="name">
@@ -59,7 +60,7 @@ export default function OrderPage({ data }) {
             />
           </label>
         </fieldset>
-        <fieldset className="menu">
+        <fieldset disabled={loading} className="menu">
           <legend> Menu</legend>
           {pizzas.map((pizza) => (
             <MenuItemStyles key={pizza.id}>
@@ -77,6 +78,7 @@ export default function OrderPage({ data }) {
                   <button
                     type="button"
                     onClick={() => addToOrder({ id: pizza.id, size })}
+                    key={size}
                   >
                     {size} {formatMoney(calculatePizzaPrice(pizza.price, size))}
                   </button>
@@ -85,7 +87,7 @@ export default function OrderPage({ data }) {
             </MenuItemStyles>
           ))}
         </fieldset>
-        <fieldset className="order">
+        <fieldset disabled={loading} className="order">
           <legend>Order</legend>
           <PizzaOrder
             order={order}
@@ -93,13 +95,17 @@ export default function OrderPage({ data }) {
             pizzas={pizzas}
           />
         </fieldset>
-        <fieldset>
+        <fieldset disabled={loading}>
           <h3>
-            Yout total is {formatMoney(calculateOrderTotal(order, pizzas))}
+            Your total is {formatMoney(calculateOrderTotal(order, pizzas))}
           </h3>
-          <div>{error ? <p>Error: {error} </p> : ''}</div>
+          <div aria-live="polite" aria-atomic="true">
+            {error ? <p>Error: {error}</p> : ''}
+          </div>
           <button type="submit" disabled={loading}>
-            {loading ? 'Placing Order' : 'Order Ahead'}
+            <span aria-live="assertive" aria-atomic="true">
+              {loading ? 'Placing Order' : 'Order Ahead'}
+            </span>
           </button>
         </fieldset>
       </OrderStyles>
