@@ -44,7 +44,6 @@ exports.handler = async (event, context) => {
   const requiredFields = ['email', 'name', 'order'];
 
   for (const field of requiredFields) {
-    console.log(`Checking that ${field} is good`);
     if (!body[field]) {
       return {
         statusCode: 400,
@@ -64,12 +63,13 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const info = await transporter.sendMail({
-    from: "Slick's Slices <slick@example.com>",
-    to: `${body.name} <${body.email}>, orders@example.com`,
-    subject: 'New order!',
-    html: generateOrderEmail({ order: body.order, total: body.total }),
-  });
+  // Disabled for live site, because it is not a real pizzeria:)
+  // const info = await transporter.sendMail({
+  //   from: "Slick's Slices <slick@example.com>",
+  //   to: `${body.name} <${body.email}>, orders@example.com`,
+  //   subject: 'New order!',
+  //   html: generateOrderEmail({ order: body.order, total: body.total }),
+  // });
 
   return {
     statusCode: 200,
